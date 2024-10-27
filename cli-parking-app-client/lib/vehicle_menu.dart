@@ -71,7 +71,7 @@ void readMenuSelection() {
   
 }
 
-void addVehicle() {
+void addVehicle() async {
 
   //ask for the regId. If no regId is provided, we repeat the process
   String regId = setRegId();
@@ -80,7 +80,7 @@ void addVehicle() {
   VehicleType vehicleType = setVehicleType();
 
   //print all persons so the user can select the owner the person-index
-  Person owner = setOwner();
+  var owner = await setOwner();
 
   try {
 
@@ -100,7 +100,7 @@ void addVehicle() {
 
 }
 
-void getVehicle() {
+void getVehicle() async {
 
   stdout.write("\nAnge index på det fordon du vill visa (tryck enter för att avbryta): ");
   String index = stdin.readLineSync()!;
@@ -112,10 +112,10 @@ void getVehicle() {
 
   try {
     //get the vehicle by its id
-    var vehicle = VehicleRepository().getByIndex(int.parse(index))!;
+    var vehicle = await VehicleRepository().getByIndex(int.parse(index));
     print("\nIndex Id Regnr Fordonstyp Ägare");
     print("-------------------------------");
-    print("$index ${vehicle.printDetails}");
+    print("$index ${vehicle!.printDetails}");
     print("-------------------------------");
 
 
@@ -140,10 +140,10 @@ void getVehicle() {
   
 }
 
-void getAllVehicles() {
+void getAllVehicles() async {
 
   //get all persons from the repo
-  var vehicleList = VehicleRepository().getAll();
+  var vehicleList = await VehicleRepository().getAll();
 
   if(vehicleList.isEmpty) {
     
@@ -159,12 +159,12 @@ void getAllVehicles() {
 
 }
 
-void updateVehicle() {
+void updateVehicle() async {
 
   //get all vehicle, if empty we return to the menu
-  var vehicleList = VehicleRepository();
+  var vehicleList = await VehicleRepository().getAll();
 
-  if(vehicleList.getAll().isEmpty) {
+  if(vehicleList.isEmpty) {
 
     print("\nDet finns inga fordon registrerade");
     showMenu();
@@ -183,22 +183,22 @@ void updateVehicle() {
   try {
 
     //try to get the vehicle from the personrepository
-    var vehicle = vehicleList.getByIndex(int.parse(index))!;
+    var vehicle = await VehicleRepository().getByIndex(int.parse(index));
 
     //ask for the regId. If no regId is provided, we repeat the process
-    String regId = setRegId("\nVilket registreringsnummer har fordonet? [Nuvarande värde: ${vehicle.regId}] ");
+    String regId = setRegId("\nVilket registreringsnummer har fordonet? [Nuvarande värde: ${vehicle!.regId}] ");
     
     //ask for vehicletype, list the vehicletypes-enum with an index so the user can select
     VehicleType vehicleType = setVehicleType("\nVilken typ av fordon är det? [Nuvarande fordonstyp: ${vehicle.vehicleType.name.toUpperCase()}] ");
 
     //print all persons so the user can select the owner the person-index
-    Person owner = setOwner("\nVem är ägaren av fordonet? [Nuvarande ägare: ${vehicle.owner.name}] ");
+    var owner = await setOwner("\nVem är ägaren av fordonet? [Nuvarande ägare: ${vehicle.owner.name}] ");
 
     //object for updated vehicle
     var updatedVehicle = Vehicle(id: vehicle.id, regId: regId, vehicleType: vehicleType, owner: owner );
 
-    //update the person
-    vehicle = vehicleList.update(vehicle, updatedVehicle)!;
+    //update the vehicle
+    await VehicleRepository().update(vehicle, updatedVehicle);
     print("\nFordonet har uppdaterats");
 
   } on StateError { //no one was found, lets try again
@@ -221,12 +221,12 @@ void updateVehicle() {
 
 }
 
-void deleteVehicle() {
+void deleteVehicle() async {
 
   //get all vehicle, if empty we return to the menu
-  var vehicleList = VehicleRepository();
+  var vehicleList = await VehicleRepository().getAll();
 
-  if(vehicleList.getAll().isEmpty) {
+  if(vehicleList.isEmpty) {
 
     print("\nDet finns inga fordon registrerade");
     showMenu();
@@ -243,10 +243,10 @@ void deleteVehicle() {
 
   try {
     //try to get the person from the personrepository
-    Vehicle vehicle = vehicleList.getByIndex(int.parse(index))!;
+    var vehicle = await VehicleRepository().getByIndex(int.parse(index));
 
     //delete the person
-    vehicleList.delete(vehicle);
+    await VehicleRepository().delete(vehicle!);
     print("\nFordonet med registreringsnummer ${vehicle.regId} har tagits bort");
 
   } on StateError { //no one was found, lets try again
@@ -311,12 +311,12 @@ VehicleType setVehicleType([String message = "\nVilken typ av fordon är det?"])
 }
 
 //subfunction to set the ownerperson
-Person setOwner([String message = "\nVem är ägaren av fordonet?"]) {
+Future<Person> setOwner([String message = "\nVem är ägaren av fordonet?"]) async {
 
   print(message);
 
   //list all persons using a function from the person-menu
-  var personList = PersonRepository().getAll();
+  var personList = await PersonRepository().getAll();
   person_menu.printPersonList(personList);
   print("");
   
@@ -325,10 +325,11 @@ Person setOwner([String message = "\nVem är ägaren av fordonet?"]) {
   do {
     stdout.write("Välj personens index: ");
     inputOwnerIndex = stdin.readLineSync()!;
-  } while(inputOwnerIndex.isEmpty || int.tryParse(inputOwnerIndex) == null || int.tryParse(inputOwnerIndex)! >= PersonRepository().getAll().length);
+  } while(inputOwnerIndex.isEmpty || int.tryParse(inputOwnerIndex) == null || int.tryParse(inputOwnerIndex)! >= (await PersonRepository().getAll()).length);
   
   //select the person by index and return it
-  return  PersonRepository().getByIndex(int.parse(inputOwnerIndex))!;
+  var person = await PersonRepository().getByIndex(int.parse(inputOwnerIndex));
+  return person!;
 
 }
 

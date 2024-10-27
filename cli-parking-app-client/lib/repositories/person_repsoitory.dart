@@ -9,8 +9,9 @@ class PersonRepository extends Repository<Person> {
 
   factory PersonRepository() => _instance;
 
-  Person getPersonById(id) { 
-    return PersonRepository().getAll().where((p) => p.id == id).first;
+  Future<Person> getPersonById(id) async { 
+    var personList = await PersonRepository().getAll();
+    return personList.where((p) => p.id == id).first;
   }
 
 }

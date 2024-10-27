@@ -9,8 +9,9 @@ class ParkingSpaceRepository extends Repository<ParkingSpace> {
 
   factory ParkingSpaceRepository() => _instance;
 
-  ParkingSpace getParkingSpaceById(id) { 
-    return ParkingSpaceRepository().getAll().where((p) => p.id == id).first;
+  Future<ParkingSpace> getParkingSpaceById(id) async { 
+    var parkingSpaceList  = await ParkingSpaceRepository().getAll();
+    return parkingSpaceList.where((p) => p.id == id).first;
   }
 
 

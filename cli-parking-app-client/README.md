@@ -1,4 +1,4 @@
-# Parkeringsapp v 1.0.0
+# Parkeringsapp klient
 Det här är min cli-baserade dart-app för att hantera parkeringar.
 
 ## Beskrivning
@@ -10,5 +10,9 @@ Det finns även funktioner för att serialsera och deserialisera JSON i varje Mo
 - Repositories: Alla models har en egen repository som ärver från den abstrakta klassen för repository. Den abstrakta klassen innehåller CRUD för anonyma objekt som ärvs till varje klass, jag har lagt till en funktion för att hitta ett objekt via objeketets id i varje enskilt repo (som inte går med ett anonymt objekt).
 
 - Menu: Här finns hanteringen av varje del i applikationen. Ägare, Fordon, Parkeringsplatser och Parkeringar. Jag har byggt in felhantering för att ta hand om inmatningsfel, och viss validering av val där man väljer objekt från ett index.
+
+## Versionshistorik
+1.0 Första version
+1.1 Uppdaterat alla repos med async-funktioner, och alla anrop med awaits.
 
 

@@ -68,7 +68,7 @@ void readMenuSelection() {
   
 }
 
-void addParkingSpace() {
+void addParkingSpace()  async{
 
   //ask for the address
   String address = setAddress();
@@ -80,7 +80,7 @@ void addParkingSpace() {
 
     //construct a ParkingSpace and add it with function from the repo
     var newParkingSpace = ParkingSpace(address: address, pricePerHour: pricePerHour);
-    ParkingSpaceRepository().add(newParkingSpace);
+    await ParkingSpaceRepository().add(newParkingSpace);
   
     print("\nParkeringsplatsen ${newParkingSpace.address} har lagts till.");
 
@@ -95,7 +95,7 @@ void addParkingSpace() {
 
 }
 
-void getParkingSpace() {
+void getParkingSpace() async {
 
   stdout.write("\nAnge index på den parkeringsplats du vill visa (tryck enter för att avbryta): ");
   String index = stdin.readLineSync()!;
@@ -108,10 +108,10 @@ void getParkingSpace() {
   try {
 
     //get the parkingspace by its id
-    var parkingSpace = ParkingSpaceRepository().getByIndex(int.parse(index))!;
+    var parkingSpace = await ParkingSpaceRepository().getByIndex(int.parse(index));
     print("\nIndex Id Adress Pris/timme");
     print("-------------------------------");
-    print("$index ${parkingSpace.printDetails}");
+    print("$index ${parkingSpace!.printDetails}");
     print("-------------------------------");
 
   } on StateError { 
@@ -136,9 +136,9 @@ void getParkingSpace() {
 
 }
 
-void getAllParkingSpaces() {
+void getAllParkingSpaces() async {
 
-  var parkingSpaceList = ParkingSpaceRepository().getAll();
+  var parkingSpaceList = await ParkingSpaceRepository().getAll();
 
   if(parkingSpaceList.isEmpty) {
 
@@ -154,10 +154,10 @@ void getAllParkingSpaces() {
 
 }
 
-void updateParkingSpace() {
+void updateParkingSpace() async {
 
-  var parkingSpaceList = ParkingSpaceRepository();
-  if(parkingSpaceList.getAll().isEmpty) {
+  var parkingSpaceList = await ParkingSpaceRepository().getAll();
+  if(parkingSpaceList.isEmpty) {
 
     print("\nDet finns inga parkeringsplatser registrerade");
     showMenu();
@@ -177,10 +177,10 @@ void updateParkingSpace() {
   try {
 
     //try to get the person from the personrepository
-    var parkingSpace = parkingSpaceList.getByIndex(int.parse(index))!;
+    var parkingSpace = await ParkingSpaceRepository().getByIndex(int.parse(index));
 
     //ask to update the name
-    String address = setAddress("\nVilken adress har parkeringsplatsen? [Nuvarande värde: ${parkingSpace.address}] ");
+    String address = setAddress("\nVilken adress har parkeringsplatsen? [Nuvarande värde: ${parkingSpace!.address}] ");
 
     //ask to update the personId
     double pricePerHour = setPricePerHour("Vilket pris per timme har parkeringsplatsen? [Nuvarande värde: ${parkingSpace.pricePerHour}] ");
@@ -188,7 +188,7 @@ void updateParkingSpace() {
     var updatedParkingSpace = ParkingSpace(id: parkingSpace.id, address: address, pricePerHour: pricePerHour);
 
     //update the person
-    parkingSpace = parkingSpaceList.update(parkingSpace, updatedParkingSpace)!;
+    await ParkingSpaceRepository().update(parkingSpace, updatedParkingSpace);
     print("\nParkeringsplatsen har uppdaterats");
 
   } on StateError { 
@@ -214,10 +214,10 @@ void updateParkingSpace() {
 
 }
 
-void deleteParkingSpace() {
+void deleteParkingSpace() async {
 
-  var parkingSpaceList = ParkingSpaceRepository();
-  if(parkingSpaceList.getAll().isEmpty) {
+  var parkingSpaceList = await ParkingSpaceRepository().getAll();
+  if(parkingSpaceList.isEmpty) {
 
     print("\nDet finns inga parkeringsplatser registrerade");
     showMenu();
@@ -234,10 +234,10 @@ void deleteParkingSpace() {
   try {
 
     //try to get the person from the personrepository
-    ParkingSpace parkingSpace = parkingSpaceList.getByIndex(index)!;
+    var parkingSpace = await ParkingSpaceRepository().getByIndex(index);
 
     //delete the person
-    ParkingSpaceRepository().delete(parkingSpace);
+    await ParkingSpaceRepository().delete(parkingSpace!);
     print("\nParkeringsplatsen ${parkingSpace.address} har tagits bort");
 
   } on StateError { 

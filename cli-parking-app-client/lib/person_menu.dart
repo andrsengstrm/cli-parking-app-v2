@@ -2,7 +2,6 @@ import "dart:convert";
 import "dart:io";
 import "package:cli/main_menu.dart" as main_menu;
 import "package:cli/models/person.dart";
-import "package:cli/parking_space_menu.dart";
 import "package:cli/repositories/person_repsoitory.dart";
 
 void showMenu() {
@@ -62,7 +61,7 @@ void readMenuSelection() {
   
 }
 
-void addPerson() {
+void addPerson() async {
 
   //ask for the name
   String name = setName();
@@ -74,7 +73,7 @@ void addPerson() {
 
     //construct a Person and add Person with function from the repo
     var newPerson = Person(personId: personId, name: name);
-    PersonRepository().add(newPerson);
+    await PersonRepository().add(newPerson);
   
     print("\nPersonen ${newPerson.name} har lagts till.");
 
@@ -89,7 +88,7 @@ void addPerson() {
 
 }
 
-void getPerson() {
+void getPerson() async {
 
   stdout.write("\nAnge index på den person du vill visa (tryck enter för att avbryta): ");
   String index = stdin.readLineSync()!;
@@ -102,10 +101,10 @@ void getPerson() {
   try {
 
     //get the person by its index
-    var person = PersonRepository().getByIndex(int.parse(index))!;
+    var person = await PersonRepository().getByIndex(int.parse(index));
     print("\nIndex Id Namn Personnummer");
     print("-------------------------------");
-    print("$index ${person.printDetails}");
+    print("$index ${person!.printDetails}");
     print("-------------------------------");
 
   } on StateError { 
@@ -131,10 +130,10 @@ void getPerson() {
   
 }
 
-void getAllPersons() {
+void getAllPersons() async {
 
   //get all persons from the repo
-  var personList = PersonRepository().getAll();
+  var personList = await PersonRepository().getAll();
 
   if(personList.isEmpty) {
     
@@ -151,11 +150,11 @@ void getAllPersons() {
 
 }
 
-void updatePerson() {
+void updatePerson() async {
 
   //get all persons, if empty we return to the menu
-  var personList = PersonRepository();
-  if(personList.getAll().isEmpty) {
+  var personList = await PersonRepository().getAll();
+  if(personList.isEmpty) {
 
     stdout.write("\nDet finns inga personer registrerade");
     showMenu();
@@ -174,10 +173,10 @@ void updatePerson() {
   try {
 
     //try to get the person from the personrepository
-    var person = personList.getByIndex(int.parse(index))!;
+    var person = await PersonRepository().getByIndex(int.parse(index));
 
     //ask to update the name
-    String name = setName("\nVilket namn har personen? [Nuvarande värde: ${person.name}] ");
+    String name = setName("\nVilket namn har personen? [Nuvarande värde: ${person!.name}] ");
 
     //ask to update the personId
     String personId = setPersonId("Vilket personnummer har personen? [Nuvarande värde: ${person.personId}] ");
@@ -185,7 +184,7 @@ void updatePerson() {
     var updatedPerson = Person(id: person.id, personId: personId, name: name);
 
     //update the person
-    person = personList.update(person, updatedPerson)!;
+    await PersonRepository().update(person, updatedPerson);
     print("\nPersonen har uppdaterats");
 
   } on StateError { 
@@ -211,11 +210,11 @@ void updatePerson() {
 
 }
 
-void deletePerson() {
+void deletePerson() async {
 
   //get all persons, if empty we return to the menu
-  var personList = PersonRepository();
-  if(personList.getAll().isEmpty) {
+  var personList = await PersonRepository().getAll();
+  if(personList.isEmpty) {
 
     stdout.write("\nDet finns inga personer registrerade");
     showMenu();
@@ -232,10 +231,10 @@ void deletePerson() {
   try {
 
     //try to get the person from the personrepository
-    Person person = personList.getByIndex(int.parse(index))!;
+    var person = await PersonRepository().getByIndex(int.parse(index));
 
     //delete the person
-    personList.delete(person);
+    await PersonRepository().delete(person!);
     print("\nPersonen ${person.name} har tagits bort");
 
   } on StateError { 

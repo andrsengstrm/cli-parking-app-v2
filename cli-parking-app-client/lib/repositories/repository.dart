@@ -3,18 +3,17 @@ abstract class Repository<T> {
   final List<T> _items = [];
 
   //crud
-  void add (T item) => _items.add(item);
+  Future<void> add (T item) async => _items.add(item);
 
-  List<T> getAll() => _items;
+  Future<List<T>> getAll() async => _items;
 
-  T? getByIndex(int index) => _items[index];
+  Future<T?> getByIndex(int index) async => _items[index];
 
-  T? update(T item, T newItem) {
+  Future<void> update(T item, T newItem) async {
     var index = _items.indexWhere((x) => x == item);
     _items[index] = newItem;
-    return _items[index];
   }
 
-  void delete(T item) => _items.remove(item);
+  Future<void> delete(T item) async => _items.remove(item);
 
 }

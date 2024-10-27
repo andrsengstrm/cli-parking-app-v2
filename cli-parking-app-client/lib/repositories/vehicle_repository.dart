@@ -9,8 +9,9 @@ class VehicleRepository extends Repository<Vehicle> {
 
   factory VehicleRepository() => _instance;
 
-  Vehicle getVehicleById(id) { 
-    return VehicleRepository().getAll().where((v) => v.id == id).first;
+  Future<Vehicle> getVehicleById(id) async { 
+    var vehicleList = await VehicleRepository().getAll();
+    return vehicleList.where((v) => v.id == id).first;
   }
 
 }
