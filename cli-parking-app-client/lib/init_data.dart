@@ -1,9 +1,9 @@
-import 'package:cli/models/parking_space.dart';
-import 'package:cli/models/person.dart';
-import 'package:cli/models/vehicle.dart';
-import 'package:cli/repositories/parking_space_repository.dart';
-import 'package:cli/repositories/person_repsoitory.dart';
-import 'package:cli/repositories/vehicle_repository.dart';
+import 'package:cli_parking_app_client/models/parking_space.dart';
+import 'package:cli_parking_app_client/models/person.dart';
+import 'package:cli_parking_app_client/models/vehicle.dart';
+import 'package:cli_parking_app_client/repositories/parking_space_repository.dart';
+import 'package:cli_parking_app_client/repositories/person_repsoitory.dart';
+import 'package:cli_parking_app_client/repositories/vehicle_repository.dart';
 
 //create some initial objects
 void initData() {

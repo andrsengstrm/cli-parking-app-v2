@@ -1,5 +1,5 @@
-import 'package:cli_parking_app_client/models/person.dart';
-import 'package:cli_parking_app_client/repositories/repository.dart';
+import 'package:cli_parking_app_server/models/person.dart';
+import 'package:cli_parking_app_server/repositories/repository.dart';
 
 class PersonRepository extends Repository<Person> {
 

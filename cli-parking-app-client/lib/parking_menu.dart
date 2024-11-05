@@ -1,13 +1,13 @@
 import "dart:io";
-import "package:cli/main_menu.dart" as main_menu;
-import "package:cli/models/parking.dart";
-import "package:cli/repositories/parking_repository.dart";
-import "package:cli/models/vehicle.dart";
-import "package:cli/vehicle_menu.dart" as vehicle_menu;
-import "package:cli/repositories/vehicle_repository.dart";
-import "package:cli/parking_space_menu.dart" as parking_space_menu;
-import "package:cli/models/parking_space.dart";
-import "package:cli/repositories/parking_space_repository.dart";
+import "package:cli_parking_app_client/main_menu.dart" as main_menu;
+import "package:cli_parking_app_client/models/parking.dart";
+import "package:cli_parking_app_client/repositories/parking_repository.dart";
+import "package:cli_parking_app_client/models/vehicle.dart";
+import "package:cli_parking_app_client/vehicle_menu.dart" as vehicle_menu;
+import "package:cli_parking_app_client/repositories/vehicle_repository.dart";
+import "package:cli_parking_app_client/parking_space_menu.dart" as parking_space_menu;
+import "package:cli_parking_app_client/models/parking_space.dart";
+import "package:cli_parking_app_client/repositories/parking_space_repository.dart";
 
 //show the menu for parkings
 void showMenu() {

@@ -1,9 +1,9 @@
 import "dart:io";
-import "package:cli/main_menu.dart" as main_menu;
-import "package:cli/person_menu.dart" as person_menu;
-import "package:cli/models/vehicle.dart";
-import "package:cli/repositories/person_repsoitory.dart";
-import "package:cli/repositories/vehicle_repository.dart";
+import "package:cli_parking_app_client/main_menu.dart" as main_menu;
+import "package:cli_parking_app_client/person_menu.dart" as person_menu;
+import "package:cli_parking_app_client/models/vehicle.dart";
+import "package:cli_parking_app_client/repositories/person_repsoitory.dart";
+import "package:cli_parking_app_client/repositories/vehicle_repository.dart";
 
 import "models/person.dart";
 

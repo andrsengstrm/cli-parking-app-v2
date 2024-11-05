@@ -1,8 +1,8 @@
 import "dart:convert";
 import "dart:io";
-import "package:cli/main_menu.dart" as main_menu;
-import "package:cli/models/person.dart";
-import "package:cli/repositories/person_repsoitory.dart";
+import "package:cli_parking_app_client/main_menu.dart" as main_menu;
+import "package:cli_parking_app_client/models/person.dart";
+import "package:cli_parking_app_client/repositories/person_repsoitory.dart";
 
 void showMenu() {
   
