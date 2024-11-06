@@ -1,7 +1,7 @@
 import 'package:cli_parking_app_client/models/parking_space.dart';
-import 'package:cli_parking_app_client/repositories/repository.dart';
+import 'package:cli_parking_app_client/repositories/repository_local.dart';
 
-class ParkingSpaceRepository extends Repository<ParkingSpace> {
+class ParkingSpaceRepository extends RepositoryLocal<ParkingSpace> {
 
   static final ParkingSpaceRepository _instance = ParkingSpaceRepository._internal();
 

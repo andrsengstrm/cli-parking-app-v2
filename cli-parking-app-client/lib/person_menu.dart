@@ -2,7 +2,7 @@ import "dart:convert";
 import "dart:io";
 import "package:cli_parking_app_client/main_menu.dart" as main_menu;
 import "package:cli_parking_app_client/models/person.dart";
-import "package:cli_parking_app_client/repositories/person_repsoitory.dart";
+import "package:cli_parking_app_client/repositories/person_repository.dart";
 
 void showMenu() {
   
@@ -90,10 +90,10 @@ void addPerson() async {
 
 void getPerson() async {
 
-  stdout.write("\nAnge index på den person du vill visa (tryck enter för att avbryta): ");
-  String index = stdin.readLineSync()!;
+  stdout.write("\nAnge id på den person du vill visa (tryck enter för att avbryta): ");
+  String id = stdin.readLineSync()!;
 
-  if(index == "") {
+  if(id == "") {
     showMenu();
     return;
   }
@@ -101,22 +101,22 @@ void getPerson() async {
   try {
 
     //get the person by its index
-    var person = await PersonRepository().getByIndex(int.parse(index));
-    print("\nIndex Id Namn Personnummer");
+    var person = await PersonRepository().getById(int.parse(id));
+    print("\nId Namn Personnummer");
     print("-------------------------------");
-    print("$index ${person!.printDetails}");
+    print(person.printDetails);
     print("-------------------------------");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("\nDet finns ingen person med index $index");
+    print("\nDet finns ingen person med id $id");
     getPerson();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("\nDet finns ingen person med index $index");
+    print("\nDet finns ingen person med id $id");
     getPerson();
 
   } catch(err) { 
@@ -176,7 +176,7 @@ void updatePerson() async {
     var person = await PersonRepository().getByIndex(int.parse(index));
 
     //ask to update the name
-    String name = setName("\nVilket namn har personen? [Nuvarande värde: ${person!.name}] ");
+    String name = setName("\nVilket namn har personen? [Nuvarande värde: ${person.name}] ");
 
     //ask to update the personId
     String personId = setPersonId("Vilket personnummer har personen? [Nuvarande värde: ${person.personId}] ");
@@ -184,7 +184,8 @@ void updatePerson() async {
     var updatedPerson = Person(id: person.id, personId: personId, name: name);
 
     //update the person
-    await PersonRepository().update(person, updatedPerson);
+    //await PersonRepository().update(person, updatedPerson);
+    await PersonRepository().update(updatedPerson);
     print("\nPersonen har uppdaterats");
 
   } on StateError { 
@@ -234,7 +235,7 @@ void deletePerson() async {
     var person = await PersonRepository().getByIndex(int.parse(index));
 
     //delete the person
-    await PersonRepository().delete(person!);
+    await PersonRepository().delete(person);
     print("\nPersonen ${person.name} har tagits bort");
 
   } on StateError { 
@@ -296,10 +297,10 @@ String setPersonId([String message = "Vilket personnummer har personen? "]) {
 //print list of persons
 void printPersonList(List<Person> personList) {
 
-    print("\nIndex Id Namn Personnummer");
+    print("\nId Namn Personnummer");
     print("-------------------------------");
     for(var person in personList) {
-      print("${personList.indexOf(person)} ${person.printDetails}");
+      print(person.printDetails);
     }
     print("-------------------------------");
 

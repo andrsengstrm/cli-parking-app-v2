@@ -3,16 +3,16 @@ var uuid = Uuid();
 
 //class for owner of a vehicle
 class Person {
-  final String id;
+  num id;
   String personId;
   String name;
 
   //constructor with optional id, it not supplied we create a uid
-  Person({String? id, required this.personId, required this.name }) : id = id ?? uuid.v1();
+  Person({num? id, required this.personId, required this.name }) : id = id ?? -1;
 
   //deserialize from json
   Person.fromJson(Map<String, dynamic> json)
-    : id = json["id"] as String,
+    : id = json["id"] as num,
       personId = json["personId"] as String,
       name = json["name"] as String;
 

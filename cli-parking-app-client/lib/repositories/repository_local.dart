@@ -1,4 +1,4 @@
-abstract class Repository<T> {
+abstract class RepositoryLocal<T> {
   
   final List<T> _items = [];
 

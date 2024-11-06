@@ -1,19 +1,20 @@
 abstract class Repository<T> {
   
-  final List<T> _items = [];
+  final List<T> items = [];
 
   //crud
-  Future<void> add (T item) async => _items.add(item);
+  Future<void> add (T item) async => items.add(item);
 
-  Future<List<T>> getAll() async => _items;
+  Future<List<T>> getAll() async => items;
 
-  Future<T?> getByIndex(int index) async => _items[index];
+  Future<T?> getByIndex(int index) async => items[index];
 
-  Future<void> update(T item, T newItem) async {
-    var index = _items.indexWhere((x) => x == item);
-    _items[index] = newItem;
+  Future<T?> getById(int id) async => throw Exception("Not implemented");
+
+  Future<void> update(int id, T updatedItem) async {
+    throw Exception("Not implemented");
   }
 
-  Future<void> delete(T item) async => _items.remove(item);
+  Future<void> delete(int id) async => throw Exception("Not implemented");
 
 }
