@@ -1,18 +1,20 @@
-import 'package:uuid/uuid.dart';
-var uuid = Uuid();
+import 'package:objectbox/objectbox.dart';
 
 //class for parking space
+@Entity()
 class ParkingSpace {
-  final String id;
+
+  @Id()
+  int id;
   String address;
   double pricePerHour;
 
   //constructor with optional id, if not supplied we create an uid
-  ParkingSpace({String? id, required this.address, required this.pricePerHour}) : id = id ?? uuid.v1();
+  ParkingSpace({int? id, required this.address, required this.pricePerHour}) : id = id ?? -1;
 
   //deserialize from json
   ParkingSpace.fromJson(Map<String, dynamic> json)
-    : id = json["id"] as String,
+    : id = json["id"] as int,
       address = json["address"] as String,
       pricePerHour = json["pricePerHour"] as double;
 

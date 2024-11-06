@@ -1,40 +1,43 @@
-import 'package:cli_parking_app_shared/models/person.dart';
+import 'package:objectbox/objectbox.dart';
 import 'package:uuid/uuid.dart';
 var uuid = Uuid();
 
 //class for vehicle
+@Entity()
 class Vehicle {
-  final String id;
+
+  @Id()
+  int id;
   String regId;
-  VehicleType vehicleType;
-  Person owner;
+  int vehicleTypeId;
+  int ownerId;
 
   //constructor with optional id, if not supplied a uid is created
-  Vehicle({String? id, required this.regId, required this.vehicleType, required this.owner }) : id = id ?? uuid.v1();
+  Vehicle({int? id, required this.regId, required this.vehicleTypeId, required this.ownerId }) : id = id ?? -1;
 
   //deserialize from json
   Vehicle.fromJson(Map<String,dynamic> json)
-    : id = json["id"] as String,
+    : id = json["id"] as int,
       regId = json["regId"] as String,
-      vehicleType = json["vehicleType"] as VehicleType,
-      owner = Person.fromJson(json["owner"]);
+      vehicleTypeId = json["vehicleType"] as int,
+      ownerId = json["ownerId"] as int;
 
 
   //serialize to json, we add in owner as an object instead of only the ownerId
   Map<String, dynamic> toJson() => {
     "id": id,
     "regId": regId,
-    "vehicleType": vehicleType,
-    "owner": owner.toJson()
+    "vehicleTypeId": vehicleTypeId,
+    "ownerId": ownerId
   };
 
   //return a string with some predefined details
-  String get printDetails => "$id $regId ${vehicleType.name.toUpperCase()} ${owner.name}";
+  String get printDetails => "$id $regId $vehicleTypeId $ownerId";
 
 }
 
 //enum for vehicle type
-enum VehicleType { 
-  bil, mc, lastbil, ospecificerad;
-}
+//enum VehicleType { 
+//  bil, mc, lastbil, ospecificerad;
+//}
  

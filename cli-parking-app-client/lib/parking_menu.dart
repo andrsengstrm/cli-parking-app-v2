@@ -3,11 +3,9 @@ import 'package:cli_parking_app_client/main_menu.dart' as main_menu;
 import 'package:cli_parking_app_client/vehicle_menu.dart' as vehicle_menu;
 import 'package:cli_parking_app_client/parking_space_menu.dart' as parking_space_menu;
 import 'package:cli_parking_app_shared/models/parking.dart';
-import 'package:cli_parking_app_shared/repositories/parking_repository.dart';
-import 'package:cli_parking_app_shared/models/vehicle.dart';
-import 'package:cli_parking_app_shared/repositories/vehicle_repository.dart';
-import 'package:cli_parking_app_shared/models/parking_space.dart';
-import 'package:cli_parking_app_shared/repositories/parking_space_repository.dart';
+import 'package:cli_parking_app_client/repositories/parking_repository.dart';
+import 'package:cli_parking_app_client/repositories/vehicle_repository.dart';
+import 'package:cli_parking_app_client/repositories/parking_space_repository.dart';
 
 //show the menu for parkings
 void showMenu() {
@@ -85,10 +83,10 @@ void readMenuSelection() {
 void startParking() async {
 
   //set the vehicle
-  var vehicle = await setVehicle();
+  var vehicleId = await setVehicleId();
 
   //set the parkingspace
-  var parkingSpace = await setParkingSpace();
+  var parkingSpace = await setParkingSpaceId();
 
   //set the time to now
   DateTime startTime = DateTime.now();
@@ -96,7 +94,7 @@ void startParking() async {
   try {
 
     //set the parking-object
-    Parking newParking = Parking(vehicle: vehicle, parkingSpace: parkingSpace, startTime: startTime);
+    Parking newParking = Parking(vehicleId: vehicleId, parkingSpaceId: parkingSpace, startTime: startTime);
     await ParkingRepository().add(newParking);
 
     print("\nParkeringen har startats.");
@@ -118,7 +116,7 @@ void endParking() async {
   //get all active parkings
   var parkingList = await ParkingRepository().getAll();
 
-  if(parkingList.where((p) => p.endTime == null).isEmpty) {
+  if(parkingList!.where((p) => p.endTime == null).isEmpty) {
 
     print("\nDet finns inga aktiva parkeringar");
     showMenu();
@@ -129,29 +127,30 @@ void endParking() async {
   print("\nVlken parkering du vill avluta?");
   printParkingList(parkingList, true);
 
-  stdout.write("\nVälj parkeringens index: ");
-  var index = stdin.readLineSync()!;
+  stdout.write("\nVälj parkeringens id: ");
+  var selection = stdin.readLineSync()!;
+  var id = int.parse(selection);
 
   try {
 
     //get the parking by its id
-    var parking = await ParkingRepository().getByIndex(int.parse(index));
+    var parking = await ParkingRepository().getById(id);
     var newParking = parking!;
     newParking.endTime = DateTime.now();
-    await ParkingRepository().update(parking, newParking);
+    await ParkingRepository().update(id, newParking);
 
     print("\nParkering har avslutats.");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("\nDet finns ingen parkering med index $index");
+    print("\nDet finns ingen parkering med id $id");
     endParking();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("\nDet finns ingen person med index $index");
+    print("\nDet finns ingen person med id $id");
     endParking();
 
   } catch(err) { 
@@ -171,7 +170,7 @@ void getParking() async {
   //get all parkings
   var parkingList = await ParkingRepository().getAll();
 
-  if(parkingList.isEmpty) {
+  if(parkingList!.isEmpty) {
 
     print("\nDet finns inga parkeringar registrerade");
     showMenu();
@@ -179,33 +178,35 @@ void getParking() async {
 
   }
 
-  stdout.write("\nAnge index på den parkering du vill visa (tryck enter för att avbryta): ");
-  String index = stdin.readLineSync()!;
-
-  if(index == "") {
+  stdout.write("\nAnge id på den parkering du vill visa (tryck enter för att avbryta): ");
+  var selection = stdin.readLineSync()!;
+  
+  if(selection == "") {
     showMenu();
     return;
   }
 
+  var id = int.parse(selection);
+
   try {
 
     //get the parking by its index
-    var parking = await ParkingRepository().getByIndex(int.parse(index));
-    print("\nIndex Id Registraringsnr Adress Starttid Sluttid Kostnad");
+    var parking = await ParkingRepository().getById(id);
+    print("\nId Registreringsnr Adress Starttid Sluttid Kostnad");
     print("-------------------------------");
-    print("$index ${parking!.printDetails}");
+    print(parking!.printDetails);
     print("-------------------------------");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("\nDet finns ingen parkering med index $index");
+    print("\nDet finns ingen parkering med id $id");
     getParking();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("\nDet finns ingen parkering med index $index");
+    print("\nDet finns ingen parkering med id $id");
     getParking();
 
   } catch(err) { 
@@ -225,7 +226,7 @@ void getAllParkings() async {
   //get all parkings
   var parkingList = await ParkingRepository().getAll();
 
-  if(parkingList.isEmpty) {
+  if(parkingList!.isEmpty) {
 
     print("\nDet finns inga parkeringar registrerade");
 
@@ -244,7 +245,7 @@ void updateParking() async {
 
   //get all parkings, if empty we return to the menu
   var parkingList = await ParkingRepository().getAll();
-  if(parkingList.isEmpty) {
+  if(parkingList!.isEmpty) {
 
     print("\nDet finns inga parkeringar registrerade");
     showMenu();
@@ -252,22 +253,21 @@ void updateParking() async {
   }
 
   stdout.write("\nAnge index på den parkering du vill uppdatera (tryck enter för att avbryta): ");
-  String index = stdin.readLineSync()!;
+  var selection = stdin.readLineSync()!;
 
-  if(index == "") { //no value provided
+  if(selection == "") { //no value provided
     showMenu();
   }
 
-  try {
-    
-    //get the old parking by its id
-    var parking = await ParkingRepository().getByIndex(int.parse(index));
+  var id = int.parse(selection);
 
+  try {
+  
     //update vehicleIs
-    var vehicle = await setVehicle("\nVilket fordon är parkerat? [Nuvarande fordon: ${parking!.vehicle.regId}]");
+    var vehicleId = await setVehicleId("\nVilket fordon är parkerat?");
 
     //update parkingspace
-    ParkingSpace parkingSpace = await setParkingSpace("\nVilken parkeingsplats? [Nuvarande parkeringsplats: ${parking.parkingSpace.address}]");
+    var parkingSpaceId = await setParkingSpaceId("\nVilken parkeingsplats?");
 
     //set the starttime
     DateTime startTime = setTime("Uppdatera tidpunkt för starttid");
@@ -276,22 +276,22 @@ void updateParking() async {
     DateTime endTime = setTime("Uppdatera tidpunkt för sluttid");
 
     //set the new parkingobject
-    var newParking = Parking(vehicle: vehicle, parkingSpace: parkingSpace, startTime: startTime, endTime: endTime);
+    var newParking = Parking(vehicleId: vehicleId, parkingSpaceId: parkingSpaceId, startTime: startTime, endTime: endTime);
 
-    await ParkingRepository().update(parking, newParking);
+    var updatedParking = await ParkingRepository().update(id, newParking);
 
     print("\nParkeringen har uppdaterats");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("\nDet finns ingen parkering med index $index");
+    print("\nDet finns ingen parkering med id $id");
     endParking();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("\nDet finns ingen person med index $index");
+    print("\nDet finns ingen person med id $id");
     endParking();
 
   } catch(err) { 
@@ -310,7 +310,7 @@ void deleteParking() async {
 
   //get all parkings, if empty we return to the menu
   var parkingList = await ParkingRepository().getAll();
-  if(parkingList.isEmpty) {
+  if(parkingList!.isEmpty) {
 
     print("\nDet finns inga parkeringar registrerade");
     showMenu();
@@ -318,31 +318,30 @@ void deleteParking() async {
   }
 
   stdout.write("\nAnge index på den parkering du vill ta bort (tryck enter för att avbryta): ");
-  String index = stdin.readLineSync()!;
+  String selection = stdin.readLineSync()!;
 
-  if(index == "") { //no value provided
+  if(selection == "") { //no value provided
     showMenu();
   }
 
+  var id = int.parse(selection);
+
   try {
 
-    //try to get the parking from the personrepository
-    var parking = await ParkingRepository().getByIndex(int.parse(index));
-
     //delete the parking
-    await ParkingRepository().delete(parking!);
+    var deletedParking = await ParkingRepository().delete(id);
     print("\nParkeringen har tagits bort");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("\nDet finns ingen parkering med index $index");
+    print("\nDet finns ingen parkering med index $id");
     deleteParking();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("\nDet finns ingen parkering med index $index");
+    print("\nDet finns ingen parkering med index $id");
     deleteParking();
 
   } catch(err) { 
@@ -361,13 +360,13 @@ void deleteParking() async {
 /*---------------- subfunctions ----------------*/
 
 //set the vehicle
-Future<Vehicle> setVehicle([String message = "\nVilket fordon vill du parkera?"]) async {
+Future<int> setVehicleId([String message = "\nVilket fordon vill du parkera?"]) async {
 
   print(message);
 
   //list all vehicles
   var vehicleList = await VehicleRepository().getAll();
-  vehicle_menu.printVehicleList(vehicleList);
+  vehicle_menu.printVehicleList(vehicleList!);
 
   //ask for index
   String inputVehicleIndex;
@@ -377,19 +376,19 @@ Future<Vehicle> setVehicle([String message = "\nVilket fordon vill du parkera?"]
   } while(inputVehicleIndex.isEmpty || int.tryParse(inputVehicleIndex) == null || int.tryParse(inputVehicleIndex)! >= vehicleList.length);
 
   //select the item by index and return it
-  var vehicle = await VehicleRepository().getByIndex(int.parse(inputVehicleIndex));
-  return vehicle!;
+  var vehicle = await VehicleRepository().getById(int.parse(inputVehicleIndex));
+  return vehicle!.id;
 
 }
 
 //set the parkingspace
-Future<ParkingSpace> setParkingSpace([String message = "\nVilken perkeringsplats vill du använda?"]) async {
+Future<int> setParkingSpaceId([String message = "\nVilken perkeringsplats vill du använda?"]) async {
 
   print(message);
 
   //list all parkingspaces
   var parkingSpaceList = await ParkingSpaceRepository().getAll();
-  parking_space_menu.printParkingSpaceList(parkingSpaceList);
+  parking_space_menu.printParkingSpaceList(parkingSpaceList!);
 
   //ask for index
   String inputParkingSpaceIndex;
@@ -399,8 +398,8 @@ Future<ParkingSpace> setParkingSpace([String message = "\nVilken perkeringsplats
   } while(inputParkingSpaceIndex.isEmpty || int.tryParse(inputParkingSpaceIndex) == null || int.tryParse(inputParkingSpaceIndex)! >= parkingSpaceList.length);
 
   //select the item by index and return it
-  var parkingSpace = await ParkingSpaceRepository().getByIndex(int.parse(inputParkingSpaceIndex));
-  return parkingSpace!;
+  var parkingSpace = await ParkingSpaceRepository().getById(int.parse(inputParkingSpaceIndex));
+  return parkingSpace!.id;
 
 }
 

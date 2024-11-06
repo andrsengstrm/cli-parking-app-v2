@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cli_parking_app_client/main_menu.dart' as main_menu;
 import 'package:cli_parking_app_shared/models/parking_space.dart';
-import 'package:cli_parking_app_shared/repositories/parking_space_repository.dart';
+import 'package:cli_parking_app_client/repositories/parking_space_repository.dart';
 
 void showMenu() {
   
@@ -79,10 +79,10 @@ void addParkingSpace()  async{
   try {
 
     //construct a ParkingSpace and add it with function from the repo
-    var newParkingSpace = ParkingSpace(address: address, pricePerHour: pricePerHour);
-    await ParkingSpaceRepository().add(newParkingSpace);
+    var parkingSpace = ParkingSpace(address: address, pricePerHour: pricePerHour);
+    var newParkingSpace = await ParkingSpaceRepository().add(parkingSpace);
   
-    print("\nParkeringsplatsen ${newParkingSpace.address} har lagts till.");
+    print("\nParkeringsplatsen ${newParkingSpace!.address} har lagts till.");
 
   } catch(err) {
 
@@ -98,32 +98,34 @@ void addParkingSpace()  async{
 void getParkingSpace() async {
 
   stdout.write("\nAnge index på den parkeringsplats du vill visa (tryck enter för att avbryta): ");
-  String index = stdin.readLineSync()!;
+  String selection = stdin.readLineSync()!;
 
-  if(index == "") {
+  if(selection == "") {
     showMenu();
     return;
   }
 
+  var id = int.parse(selection);
+
   try {
 
     //get the parkingspace by its id
-    var parkingSpace = await ParkingSpaceRepository().getByIndex(int.parse(index));
-    print("\nIndex Id Adress Pris/timme");
+    var parkingSpace = await ParkingSpaceRepository().getById(id);
+    print("\nId Adress Pris/timme");
     print("-------------------------------");
-    print("$index ${parkingSpace!.printDetails}");
+    print(parkingSpace!.printDetails);
     print("-------------------------------");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("Det finns ingen parkeringsplats med index $index");
+    print("Det finns ingen parkeringsplats med id $id");
     getParkingSpace();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("Det finns ingen parkeringsplats med index $index");
+    print("Det finns ingen parkeringsplats med id $id");
     getParkingSpace();
 
   } catch(err) { //some other error
@@ -140,7 +142,7 @@ void getAllParkingSpaces() async {
 
   var parkingSpaceList = await ParkingSpaceRepository().getAll();
 
-  if(parkingSpaceList.isEmpty) {
+  if(parkingSpaceList!.isEmpty) {
 
     print("Det finns inga parkeringsplatser registrerade");
 
@@ -157,7 +159,7 @@ void getAllParkingSpaces() async {
 void updateParkingSpace() async {
 
   var parkingSpaceList = await ParkingSpaceRepository().getAll();
-  if(parkingSpaceList.isEmpty) {
+  if(parkingSpaceList!.isEmpty) {
 
     print("\nDet finns inga parkeringsplatser registrerade");
     showMenu();
@@ -165,42 +167,39 @@ void updateParkingSpace() async {
   }
 
   stdout.write("\nAnge index på den parkeringsplats du vill uppdatera (tryck enter för att avbryta): ");
-  String index = stdin.readLineSync()!;
+  String selection = stdin.readLineSync()!;
 
-  if(index == "") {
-
+  if(selection == "") {
     showMenu();
     return;
-
   }
+
+  var id = int.parse(selection);
 
   try {
 
-    //try to get the person from the personrepository
-    var parkingSpace = await ParkingSpaceRepository().getByIndex(int.parse(index));
-
     //ask to update the name
-    String address = setAddress("\nVilken adress har parkeringsplatsen? [Nuvarande värde: ${parkingSpace!.address}] ");
+    String address = setAddress("\nVilken adress har parkeringsplatsen? ");
 
     //ask to update the personId
-    double pricePerHour = setPricePerHour("Vilket pris per timme har parkeringsplatsen? [Nuvarande värde: ${parkingSpace.pricePerHour}] ");
+    double pricePerHour = setPricePerHour("Vilket pris per timme har parkeringsplatsen? ");
 
-    var updatedParkingSpace = ParkingSpace(id: parkingSpace.id, address: address, pricePerHour: pricePerHour);
+    var parkingSpace = ParkingSpace(id: id, address: address, pricePerHour: pricePerHour);
 
     //update the person
-    await ParkingSpaceRepository().update(parkingSpace, updatedParkingSpace);
-    print("\nParkeringsplatsen har uppdaterats");
+    var updatedParkingSpace = await ParkingSpaceRepository().update(id, parkingSpace);
+    print("\nParkeringsplatsen ${updatedParkingSpace!.address} har uppdaterats");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("\nDet finns ingen parkeringsplats med index $index");
+    print("\nDet finns ingen parkeringsplats med id $id");
     updateParkingSpace();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("\nDet finns ingen parkeringsplats med index $index");
+    print("\nDet finns ingen parkeringsplats med id $id");
     updateParkingSpace();
 
   } catch(err) { 
@@ -217,7 +216,7 @@ void updateParkingSpace() async {
 void deleteParkingSpace() async {
 
   var parkingSpaceList = await ParkingSpaceRepository().getAll();
-  if(parkingSpaceList.isEmpty) {
+  if(parkingSpaceList!.isEmpty) {
 
     print("\nDet finns inga parkeringsplatser registrerade");
     showMenu();
@@ -226,30 +225,27 @@ void deleteParkingSpace() async {
   //select parkingspace by index
   String input;
   do {
-    stdout.write("\nVälj index för parkeringsplatsen som du vill ta bort: ");
+    stdout.write("\nVälj id för parkeringsplatsen som du vill ta bort: ");
     input = stdin.readLineSync()!;
   } while(input.isEmpty || int.tryParse(input) == null);
-  int index = int.parse(input);
+  int id = int.parse(input);
 
   try {
 
-    //try to get the person from the personrepository
-    var parkingSpace = await ParkingSpaceRepository().getByIndex(index);
-
-    //delete the person
-    await ParkingSpaceRepository().delete(parkingSpace!);
-    print("\nParkeringsplatsen ${parkingSpace.address} har tagits bort");
+    //delete the parking space
+    var deletedParkingSpace = await ParkingSpaceRepository().delete(id);
+    print("\nParkeringsplatsen ${deletedParkingSpace!.address} har tagits bort");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("\nDet finns ingen parkeingsplats med index $index");
+    print("\nDet finns ingen parkeingsplats med id $id");
     deleteParkingSpace();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("\nDet finns ingen parkeingsplats med index $index");
+    print("\nDet finns ingen parkeingsplats med id $id");
     deleteParkingSpace();
 
   } catch(err) { 
@@ -300,10 +296,10 @@ double setPricePerHour([String message = "Vilket pris per timme har parkeringspl
 //print list of parkingspaces
 void printParkingSpaceList(List<ParkingSpace> parkingSpaceList) {
 
-    print("\nIndex Id Adress Pris/timme");
+    print("\nId Adress Pris/timme");
     print("-------------------------------");
     for(var parkingSpace in parkingSpaceList) {
-      print("${parkingSpaceList.indexOf(parkingSpace)} ${parkingSpace.printDetails}");
+      print(parkingSpace.printDetails);
     }
     print("-------------------------------");
 

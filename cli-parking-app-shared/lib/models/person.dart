@@ -1,18 +1,19 @@
-import 'package:uuid/uuid.dart';
-var uuid = Uuid();
+import 'package:objectbox/objectbox.dart';
 
 //class for owner of a vehicle
+@Entity()
 class Person {
-  num id;
+  @Id()
+  int id;
   String personId;
   String name;
 
   //constructor with optional id, it not supplied we create a uid
-  Person({num? id, required this.personId, required this.name }) : id = id ?? -1;
+  Person({int? id, required this.personId, required this.name }) : id = id ?? -1;
 
   //deserialize from json
   Person.fromJson(Map<String, dynamic> json)
-    : id = json["id"] as num,
+    : id = json["id"] as int,
       personId = json["personId"] as String,
       name = json["name"] as String;
 
