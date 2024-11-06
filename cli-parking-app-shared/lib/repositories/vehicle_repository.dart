@@ -1,7 +1,7 @@
-import 'package:cli_parking_app_server/models/vehicle.dart';
-import 'package:cli_parking_app_server/repositories/repository.dart';
+import 'package:cli_parking_app_shared/models/vehicle.dart';
+import 'package:cli_parking_app_shared/repositories/repository_local.dart';
 
-class VehicleRepository extends Repository<Vehicle> {
+class VehicleRepository extends RepositoryLocal<Vehicle> {
 
   static final VehicleRepository _instance = VehicleRepository._internal();
   

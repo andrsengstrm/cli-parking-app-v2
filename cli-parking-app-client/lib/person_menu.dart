@@ -1,8 +1,9 @@
-import "dart:convert";
-import "dart:io";
-import "package:cli_parking_app_client/main_menu.dart" as main_menu;
-import "package:cli_parking_app_client/models/person.dart";
-import "package:cli_parking_app_client/repositories/person_repository.dart";
+import 'dart:convert';
+import 'dart:io';
+import 'package:cli_parking_app_client/main_menu.dart' as main_menu;
+import 'package:cli_parking_app_client/repositories/person_repository.dart';
+import 'package:cli_parking_app_shared/models/person.dart';
+
 
 void showMenu() {
   
@@ -161,10 +162,10 @@ void updatePerson() async {
 
   }
 
-  stdout.write("\nAnge index på den person du vill uppdatera (tryck enter för att avbryta): ");
-  String index = stdin.readLineSync()!;
+  stdout.write("\nAnge id på den person du vill uppdatera (tryck enter för att avbryta): ");
+  String id = stdin.readLineSync()!;
 
-  if(index == "") {
+  if(id == "") {
 
     showMenu();
 
@@ -173,7 +174,7 @@ void updatePerson() async {
   try {
 
     //try to get the person from the personrepository
-    var person = await PersonRepository().getByIndex(int.parse(index));
+    var person = await PersonRepository().getById(int.parse(id));
 
     //ask to update the name
     String name = setName("\nVilket namn har personen? [Nuvarande värde: ${person.name}] ");
@@ -181,23 +182,23 @@ void updatePerson() async {
     //ask to update the personId
     String personId = setPersonId("Vilket personnummer har personen? [Nuvarande värde: ${person.personId}] ");
 
-    var updatedPerson = Person(id: person.id, personId: personId, name: name);
+    var personToUpdate = Person(id: person.id, personId: personId, name: name);
 
     //update the person
     //await PersonRepository().update(person, updatedPerson);
-    await PersonRepository().update(updatedPerson);
-    print("\nPersonen har uppdaterats");
+    var updatedPerson = await PersonRepository().update(int.parse(id), personToUpdate);
+    print("\nPersonen med id ${updatedPerson.id} har uppdaterats");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("\nDet finns ingen person med index $index");
+    print("\nDet finns ingen person med id $id");
     updatePerson();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("\nDet finns ingen person med index $index");
+    print("\nDet finns ingen person med id $id");
     updatePerson();
 
   } catch(err) { 
@@ -222,32 +223,29 @@ void deletePerson() async {
 
   }
 
-  stdout.write("\nAnge index på den person du vill ta bort (tryck enter för att avbryta): ");
-  String index = stdin.readLineSync()!;
+  stdout.write("\nAnge id på den person du vill ta bort (tryck enter för att avbryta): ");
+  String id = stdin.readLineSync()!;
 
-  if(index == "") { //no value provided
+  if(id == "") { //no value provided
     showMenu();
   }
 
   try {
 
-    //try to get the person from the personrepository
-    var person = await PersonRepository().getByIndex(int.parse(index));
-
     //delete the person
-    await PersonRepository().delete(person);
-    print("\nPersonen ${person.name} har tagits bort");
+    var deletedPerson = await PersonRepository().delete(int.parse(id));
+    print("\nPersonen med id ${deletedPerson.id} har tagits bort");
 
   } on StateError { 
     
     //no one was found, lets try again
-    print("\nDet finns ingen person med index $index");
+    print("\nDet finns ingen person med id $id");
     deletePerson();
 
   } on RangeError { 
     
     //outside the index, lets try again
-    print("\nDet finns ingen person med index $index");
+    print("\nDet finns ingen person med id $id");
     deletePerson();
 
   } catch(err) { 

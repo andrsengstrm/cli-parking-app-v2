@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cli_parking_app_client/main_menu.dart' as main_menu;
-import 'package:cli_parking_app_client/models/parking_space.dart';
-import 'package:cli_parking_app_client/repositories/parking_space_repository.dart';
+import 'package:cli_parking_app_shared/models/parking_space.dart';
+import 'package:cli_parking_app_shared/repositories/parking_space_repository.dart';
 
 void showMenu() {
   

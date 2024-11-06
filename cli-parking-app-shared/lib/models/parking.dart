@@ -1,6 +1,6 @@
-import 'package:cli_parking_app_client/models/parking_space.dart';
-import 'package:cli_parking_app_client/models/person.dart';
-import 'package:cli_parking_app_client/models/vehicle.dart';
+import 'package:cli_parking_app_shared/models/parking_space.dart';
+import 'package:cli_parking_app_shared/models/person.dart';
+import 'package:cli_parking_app_shared/models/vehicle.dart';
 import 'package:uuid/uuid.dart';
 var uuid = Uuid();
 

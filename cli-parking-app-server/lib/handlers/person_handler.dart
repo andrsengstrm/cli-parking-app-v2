@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
-import 'package:cli_parking_app_server/models/person.dart';
-import 'package:cli_parking_app_server/repositories/person_repsoitory.dart';
+import 'package:cli_parking_app_shared/models/person.dart';
+import 'package:cli_parking_app_server/repositories/person_repository.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 Future<Response> addPerson(Request request) async {
@@ -9,8 +9,8 @@ Future<Response> addPerson(Request request) async {
   final requestBody = await request.readAsString();
   print(requestBody);
   final person = Person.fromJson(jsonDecode(requestBody));
-  await PersonRepository().add(person);
-  return Response.ok("Ok");
+  var addedPerson = await PersonRepository().add(person);
+  return Response.ok(jsonEncode(addedPerson));
 }
 
 Future<Response> getAllPersons(Request request) async {
@@ -31,15 +31,15 @@ Future<Response> updatePerson(Request request) async {
   final id = request.params['id']!;
   final requestBody = await request.readAsString();
   final person = Person.fromJson(jsonDecode(requestBody));
-  await PersonRepository().update(int.parse(id),person);
-  return Response.ok("Ok");
+  var updatedPerson = await PersonRepository().update(int.parse(id), person);
+  return Response.ok(jsonEncode(updatedPerson));
 }
 
 Future<Response> deletePerson(Request request) async {
   print("Trying to delete a person...");
   final id = request.params['id']!;
-  await PersonRepository().delete(int.parse(id));
-  return Response.ok("Ok");
+  var deletedPerson = await PersonRepository().delete(int.parse(id));
+  return Response.ok(jsonEncode(deletedPerson));
 }
 
 /*

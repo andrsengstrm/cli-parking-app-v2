@@ -1,4 +1,4 @@
-import 'package:cli_parking_app_server/models/person.dart';
+import 'package:cli_parking_app_shared/models/person.dart';
 import 'package:uuid/uuid.dart';
 var uuid = Uuid();
 

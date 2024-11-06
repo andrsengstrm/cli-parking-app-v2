@@ -19,21 +19,6 @@ Response _rootHandler(Request req) {
   return Response.ok('Server for Parking-app v2 running...');
 }
 
-/*
-Future<Response> _addPersonHandler(Request request) async {
-  print("Getting a post request...");
-  final person = await request.readAsString();
-  print(person);
-  return Response.ok("Ok");
-}
-
-
-Response _echoHandler(Request request) {
-  final message = request.params['message'];
-  return Response.ok('$message\n');
-}
-*/
-
 void main(List<String> args) async {
   // Use any available host or container IP (usually `0.0.0.0`).
   final ip = InternetAddress.anyIPv4;

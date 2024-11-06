@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 
-abstract class RepositoryRemote<T> {
+abstract interface class RepositoryRemote<T> {
   
   final String baseUrl = "http://localhost:8080";
   final http.Client client = http.Client();

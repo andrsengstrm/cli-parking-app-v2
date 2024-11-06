@@ -1,11 +1,10 @@
-import "dart:io";
-import "package:cli_parking_app_client/main_menu.dart" as main_menu;
-import "package:cli_parking_app_client/person_menu.dart" as person_menu;
-import "package:cli_parking_app_client/models/vehicle.dart";
-import "package:cli_parking_app_client/repositories/person_repository.dart";
-import "package:cli_parking_app_client/repositories/vehicle_repository.dart";
-
-import "models/person.dart";
+import 'dart:io';
+import 'package:cli_parking_app_client/main_menu.dart' as main_menu;
+import 'package:cli_parking_app_client/person_menu.dart' as person_menu;
+import 'package:cli_parking_app_shared/models/vehicle.dart';
+import 'package:cli_parking_app_shared/models/person.dart';
+import 'package:cli_parking_app_client/repositories/person_repository.dart';
+import 'package:cli_parking_app_shared/repositories/vehicle_repository.dart';
 
 void showMenu() {
   
@@ -321,14 +320,14 @@ Future<Person> setOwner([String message = "\nVem är ägaren av fordonet?"]) asy
   print("");
   
   //ask the user to select index and make sure we get an index within the range for the persons registrered
-  String inputOwnerIndex;
+  String inputOwnerId;
   do {
-    stdout.write("Välj personens index: ");
-    inputOwnerIndex = stdin.readLineSync()!;
-  } while(inputOwnerIndex.isEmpty || int.tryParse(inputOwnerIndex) == null || int.tryParse(inputOwnerIndex)! >= (await PersonRepository().getAll()).length);
+    stdout.write("Välj personens id: ");
+    inputOwnerId = stdin.readLineSync()!;
+  } while(inputOwnerId.isEmpty || int.tryParse(inputOwnerId) == null || int.tryParse(inputOwnerId)! >= (await PersonRepository().getAll()).length);
   
   //select the person by index and return it
-  var person = await PersonRepository().getByIndex(int.parse(inputOwnerIndex));
+  var person = await PersonRepository().getById(int.parse(inputOwnerId));
   return person;
 
 }

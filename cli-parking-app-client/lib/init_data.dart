@@ -1,9 +1,9 @@
-import 'package:cli_parking_app_client/models/parking_space.dart';
-import 'package:cli_parking_app_client/models/person.dart';
-import 'package:cli_parking_app_client/models/vehicle.dart';
-import 'package:cli_parking_app_client/repositories/parking_space_repository.dart';
+import 'package:cli_parking_app_shared/models/parking_space.dart';
+import 'package:cli_parking_app_shared/models/person.dart';
+import 'package:cli_parking_app_shared/models/vehicle.dart';
+import 'package:cli_parking_app_shared/repositories/parking_space_repository.dart';
 import 'package:cli_parking_app_client/repositories/person_repository.dart';
-import 'package:cli_parking_app_client/repositories/vehicle_repository.dart';
+import 'package:cli_parking_app_shared/repositories/vehicle_repository.dart';
 
 //create some initial objects
 Future<void> initData() async {
