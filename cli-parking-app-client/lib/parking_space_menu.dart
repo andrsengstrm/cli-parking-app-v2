@@ -10,7 +10,7 @@ void showMenu() {
   print("\nMeny för parkingsplatser, välj ett alternativ:"); 
   print("1. Lägg till parkeringsplats");
   print("2. Visa parkeringsplats");
-  print("3. Visa alla parkeringsplats");
+  print("3. Visa alla parkeringsplatser");
   print("4. Uppdatera parkeringsplats");
   print("5. Ta bort parkeringsplats");
   print("6. Gå tillbaka till huvudmenyn");
@@ -102,10 +102,26 @@ void addParkingSpace()  async{
 
 void getParkingSpace() async {
 
+  var parkingSpaceList = await ParkingSpaceRepository().getAll();
+
+  if(parkingSpaceList!.isEmpty) {
+
+    print("Det finns inga parkeringsplatser registrerade");
+
+    showMenu();
+
+    return;
+
+  } else {
+
+    printParkingSpaceList(parkingSpaceList);
+
+  }
+
   stdout.write("\nAnge id på den parkeringsplats du vill visa (tryck enter för att avbryta): ");
   String selection = stdin.readLineSync()!;
 
-  if(selection == "") {
+  if(selection == "" || int.tryParse(selection) == null) {
 
     showMenu();
     
@@ -118,23 +134,29 @@ void getParkingSpace() async {
   try {
 
     //get the parkingspace by its id
-    var parkingSpace = await ParkingSpaceRepository().getById(id);
+    var parkingSpace = parkingSpaceList.where((p) => p.id == id).first;
     print("\nId Adress Pris/timme");
     print("-------------------------------");
-    print(parkingSpace!.printDetails);
+    print(parkingSpace.printDetails);
     print("-------------------------------");
 
   } on StateError { 
     
     //no one was found, lets try again
     print("Det finns ingen parkeringsplats med id $id");
+
     getParkingSpace();
+
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("Det finns ingen parkeringsplats med id $id");
+
     getParkingSpace();
+
+    return;
 
   } catch(err) { //some other error
 
@@ -184,7 +206,7 @@ void updateParkingSpace() async {
   stdout.write("\nAnge id på den parkeringsplats du vill uppdatera (tryck enter för att avbryta): ");
   String selection = stdin.readLineSync()!;
 
-  if(selection == "") {
+  if(selection == "" || int.tryParse(selection) == null) {
 
     showMenu();
     
@@ -212,13 +234,19 @@ void updateParkingSpace() async {
     
     //no one was found, lets try again
     print("\nDet finns ingen parkeringsplats med id $id");
+
     updateParkingSpace();
+
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("\nDet finns ingen parkeringsplats med id $id");
+
     updateParkingSpace();
+
+    return;
 
   } catch(err) { 
     
@@ -248,13 +276,19 @@ void deleteParkingSpace() async {
 
   printParkingSpaceList(parkingSpaceList);
 
+  stdout.write("\nAnge id på den parkeringsplats du vill ta bort (tryck enter för att avbryta): ");
+  String selection = stdin.readLineSync()!;
+
   //select parkingspace by index
-  String input;
-  do {
-    stdout.write("\nAnge id för parkeringsplatsen som du vill ta bort: ");
-    input = stdin.readLineSync()!;
-  } while(input.isEmpty || int.tryParse(input) == null);
-  int id = int.parse(input);
+  if(selection == "" || int.tryParse(selection) == null) {
+
+    showMenu();
+    
+    return;
+  
+  }
+
+  var id = int.parse(selection);
 
   try {
 
@@ -266,13 +300,19 @@ void deleteParkingSpace() async {
     
     //no one was found, lets try again
     print("\nDet finns ingen parkeingsplats med id $id");
+
     deleteParkingSpace();
+
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("\nDet finns ingen parkeingsplats med id $id");
+
     deleteParkingSpace();
+
+    return;
 
   } catch(err) { 
     

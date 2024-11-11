@@ -69,18 +69,18 @@ void readMenuSelection() {
 void addPerson() async {
 
   //ask for the name
-  String name = setName();
+  String name = await setName();
 
   //ask for personId
-  String personId = setPersonId();
+  String personId = await setPersonId();
     
   try {
 
     //construct a Person and add Person with function from the repo
     var newPerson = Person(personId: personId, name: name);
-    await PersonRepository().add(newPerson);
+    var addedPerson = await PersonRepository().add(newPerson);
   
-    print("\nPersonen ${newPerson.name} har lagts till.");
+    print("\nPersonen ${addedPerson!.name} har lagts till.");
 
   } catch(err) {
 
@@ -97,10 +97,24 @@ void addPerson() async {
 
 void getPerson() async {
 
-  stdout.write("\nAnge id på den person du vill visa (tryck enter för att avbryta): ");
-  String id = stdin.readLineSync()!;
+    //get all persons, if empty we return to the menu
+  var personList = await PersonRepository().getAll();
+  if(personList.isEmpty) {
 
-  if(id == "") {
+    stdout.write("\nDet finns inga personer registrerade");
+
+    showMenu();
+
+    return;
+
+  }
+
+  printPersonList(personList);
+
+  stdout.write("\nAnge id på den person du vill visa (tryck enter för att avbryta): ");
+  String selection = stdin.readLineSync()!;
+
+  if(selection == "" || int.tryParse(selection) == null) {
 
     showMenu();
     
@@ -108,10 +122,12 @@ void getPerson() async {
   
   }
 
+  int id = int.parse(selection);
+
   try {
 
     //get the person by its index
-    var person = await PersonRepository().getById(int.parse(id));
+    var person =  personList.where((p) => p.id == id).first;
     print("\nId Namn Personnummer");
     print("-------------------------------");
     print(person.printDetails);
@@ -121,13 +137,19 @@ void getPerson() async {
     
     //no one was found, lets try again
     print("\nDet finns ingen person med id $id");
+
     getPerson();
+
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("\nDet finns ingen person med id $id");
+
     getPerson();
+
+    return;
 
   } catch(err) { 
     
@@ -181,45 +203,53 @@ void updatePerson() async {
   printPersonList(personList);
 
   stdout.write("\nAnge id på den person du vill uppdatera (tryck enter för att avbryta): ");
-  String id = stdin.readLineSync()!;
+  String selection = stdin.readLineSync()!;
 
-  if(id == "") {
+  if(selection == "" || int.tryParse(selection) == null) {
 
     showMenu();
-
+    
     return;
-
+  
   }
+
+  int id = int.parse(selection);
 
   try {
 
     //try to get the person from the personrepository
-    var person = await PersonRepository().getById(int.parse(id));
+    var person = personList.where((p) => p.id == id).first;
 
     //ask to update the name
-    String name = setName("\nVilket namn har personen? [Nuvarande värde: ${person.name}] ");
+    String name = await setName("\nVilket namn har personen? [Nuvarande värde: ${person.name}] ");
 
     //ask to update the personId
-    String personId = setPersonId("Vilket personnummer har personen? [Nuvarande värde: ${person.personId}] ");
+    String personId = await setPersonId("Vilket personnummer har personen? [Nuvarande värde: ${person.personId}] ");
 
     var personToUpdate = Person(id: person.id, personId: personId, name: name);
 
     //update the person
     //await PersonRepository().update(person, updatedPerson);
-    var updatedPerson = await PersonRepository().update(int.parse(id), personToUpdate);
+    var updatedPerson = await PersonRepository().update(id, personToUpdate);
     print("\nPersonen med id ${updatedPerson.id} har uppdaterats");
 
   } on StateError { 
     
     //no one was found, lets try again
     print("\nDet finns ingen person med id $id");
+
     updatePerson();
+
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("\nDet finns ingen person med id $id");
+
     updatePerson();
+
+    return;
 
   } catch(err) { 
     
@@ -251,52 +281,60 @@ void deletePerson() async {
   printPersonList(personList);
 
   stdout.write("\nAnge id på den person du vill ta bort (tryck enter för att avbryta): ");
-  String id = stdin.readLineSync()!;
+  String selection = stdin.readLineSync()!;
 
-  if(id == "") { //no value provided
+  if(selection == "" || int.tryParse(selection) == null) {
 
     showMenu();
-  
+    
     return;
   
   }
 
+  int id = int.parse(selection);
+
   try {
 
     //delete the person
-    var deletedPerson = await PersonRepository().delete(int.parse(id));
+    var deletedPerson = await PersonRepository().delete(id);
     print("\nPersonen med id ${deletedPerson.id} har tagits bort");
 
   } on StateError { 
     
     //no one was found, lets try again
     print("\nDet finns ingen person med id $id");
+
     deletePerson();
+
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("\nDet finns ingen person med id $id");
+
     deletePerson();
+
+    return;
 
   } catch(err) { 
     
     //some other error, exit function
     print("\nEtt fel har uppstått: $err");
 
-  }
+  } 
 
   showMenu();
 
   return;
-
+  
 }
 
 
 /*---------------- subfunctions -----------------------*/
 
 //sunfunction to set or update the name
-String setName([String message = "\nVilket namn har personen? "]) {
+Future<String> setName([String message = "\nVilket namn har personen? "]) async {
 
   //set the name, make sure its not empty
   String name;
@@ -311,7 +349,7 @@ String setName([String message = "\nVilket namn har personen? "]) {
 }
 
 //subfunction to set personId
-String setPersonId([String message = "Vilket personnummer har personen? "]) {
+Future<String> setPersonId([String message = "Vilket personnummer har personen? "]) async {
 
   //set the personId, make sure its not empty
   String personId;

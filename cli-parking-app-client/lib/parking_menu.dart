@@ -89,18 +89,16 @@ void readMenuSelection() {
 //function to start a new parking
 void startParking() async {
 
-  //set the vehicle
-  var vehicle = await setVehicle();
-
-  //set the parkingspace
-  var parkingSpace = await setParkingSpace();
-
-  //set the time to now
-  String startTime = Helpers().formatDate(DateTime.now());
-
-  print(startTime);
-
   try {
+
+    //set the vehicle
+    var vehicle = await setVehicle();
+
+    //set the parkingspace
+    var parkingSpace = await setParkingSpace();
+
+    //set the time to now
+    String startTime = Helpers().formatDate(DateTime.now());
 
     //set the parking-object
     Parking newParking = Parking(vehicle: vehicle, parkingSpace: parkingSpace, startTime: startTime, endTime: "");
@@ -140,17 +138,26 @@ void endParking() async {
   //print a list of parkings
   printParkingList(parkingList, true);
 
-  stdout.write("\nAnge id för den parkeringens du vill avslute: ");
-  var selection = stdin.readLineSync()!;
-  var id = int.parse(selection);
+  stdout.write("\nAnge id för den parkeringens du vill avsluta: ");
+  String selection = stdin.readLineSync()!;
+
+  if(selection == "" || int.tryParse(selection) == null) {
+
+    showMenu();
+
+    return;
+
+  }
+
+  int id = int.parse(selection);
 
   try {
 
     //get the parking by its id
-    var parking = await ParkingRepository().getById(id);
-    var newParking = parking!;
-    newParking.endTime = Helpers().formatDate(DateTime.now());
-    await ParkingRepository().update(id, newParking);
+    var parking = parkingList.where((p) => p.id == id).first;
+    var updatedParking = parking;
+    updatedParking.endTime = Helpers().formatDate(DateTime.now());
+    await ParkingRepository().update(id, updatedParking);
 
     print("\nParkering har avslutats.");
 
@@ -158,13 +165,19 @@ void endParking() async {
     
     //no one was found, lets try again
     print("\nDet finns ingen parkering med id $id");
+
     endParking();
+    
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("\nDet finns ingen parkering med id $id");
+
     endParking();
+    
+    return;
 
   } catch(err) { 
     
@@ -200,7 +213,7 @@ void getParking() async {
   stdout.write("\nAnge id på den parkering du vill visa (tryck enter för att avbryta): ");
   var selection = stdin.readLineSync()!;
   
-  if(selection == "") {
+  if(selection == "" || int.tryParse(selection) == null) {
 
     showMenu();
     
@@ -213,23 +226,29 @@ void getParking() async {
   try {
 
     //get the parking by its index
-    var parking = await ParkingRepository().getById(id);
+    var parking = parkingList.where((p) => p.id == id).first;
     print("\nId Registreringsnr Adress Starttid Sluttid Kostnad");
     print("-------------------------------");
-    print(parking!.printDetails);
+    print(parking.printDetails);
     print("-------------------------------");
 
   } on StateError { 
     
     //no one was found, lets try again
     print("\nDet finns ingen parkering med id $id");
+
     getParking();
+
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("\nDet finns ingen parkering med id $id");
+
     getParking();
+
+    return;
 
   } catch(err) { 
     
@@ -286,7 +305,7 @@ void updateParking() async {
   stdout.write("\nAnge id på den parkering du vill uppdatera (tryck enter för att avbryta): ");
   var selection = stdin.readLineSync()!;
 
-  if(selection == "") { //no value provided
+  if(selection == "" || int.tryParse(selection) == null) { //no value provided
     
     showMenu();
   
@@ -321,13 +340,19 @@ void updateParking() async {
     
     //no one was found, lets try again
     print("\nDet finns ingen parkering med id $id");
+
     endParking();
+
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("\nDet finns ingen parkering med id $id");
+
     endParking();
+
+    return;
 
   } catch(err) { 
     
@@ -382,13 +407,19 @@ void deleteParking() async {
     
     //no one was found, lets try again
     print("\nDet finns ingen parkering med index $id");
+
     deleteParking();
+
+    return;
 
   } on RangeError { 
     
     //outside the index, lets try again
     print("\nDet finns ingen parkering med index $id");
+
     deleteParking();
+
+    return;
 
   } catch(err) { 
     

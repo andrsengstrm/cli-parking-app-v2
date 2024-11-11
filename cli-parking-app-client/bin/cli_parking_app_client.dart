@@ -1,4 +1,4 @@
-import "package:cli_parking_app_client/init_data.dart";
+//import "package:cli_parking_app_client/init_data.dart";
 import "package:cli_parking_app_client/main_menu.dart" as main_menu;
 
 void main(List<String> arguments) async {

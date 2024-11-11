@@ -5,7 +5,6 @@ import 'package:cli_parking_app_shared/models/person.dart';
 import 'package:cli_parking_app_shared/models/vehicle.dart';
 import 'package:cli_parking_app_client/repositories/person_repository.dart';
 import 'package:cli_parking_app_client/repositories/vehicle_repository.dart';
-import 'package:cli_parking_app_shared/objectbox.g.dart';
 
 void showMenu() {
   
@@ -109,10 +108,23 @@ void addVehicle() async {
 
 void getVehicle() async {
 
+  //get all vehicles from the repo
+  var vehicleList = await VehicleRepository().getAll();
+
+  if(vehicleList!.isEmpty) {
+    
+    print("\nDet finns inga fordon registrerade");
+  
+  } else {
+    
+    printVehicleList(vehicleList);
+
+  }
+
   stdout.write("\nAnge id på det fordon du vill visa (tryck enter för att avbryta): ");
   String selection = stdin.readLineSync()!;
 
-  if(selection == "") {
+  if(selection == "" || int.tryParse(selection) == null) {
     
     showMenu();
     
@@ -120,14 +132,14 @@ void getVehicle() async {
   
   }
 
-  var id = int.parse(selection);
+  int id  = int.parse(selection);
 
   try {
     //get the vehicle by its id
-    var vehicle = await VehicleRepository().getById(id);
+    var vehicle = vehicleList.where((v) => v.id == id).first;
     print("\nId Regnr Fordonstyp Ägare");
     print("-------------------------------");
-    print(vehicle!.printDetails);
+    print(vehicle.printDetails);
     print("-------------------------------");
 
 
@@ -136,17 +148,26 @@ void getVehicle() async {
   } on StateError { //no one was found, lets try again
 
     print("\nDet finns inget fordon med id $id");
+
     getVehicle();
+
+    return;
 
   } on RangeError { //outside the index, lets try again
 
     print("\nDet finns inget fordon med id $id");
+
     getVehicle();
+
+    return;
 
   } catch(err) { //some other error
 
     print("\nEtt fel har uppstått: $err");
+
     getVehicle();
+
+    return;
 
   }
 
@@ -195,9 +216,7 @@ void updateVehicle() async {
   stdout.write("\nAnge id på det fordon du vill uppdatera (tryck enter för att avbryta): ");
   String selection = stdin.readLineSync()!;
 
-  if(selection == "") {
-
-    print("\nDet finns inga fordon registrerade");
+  if(selection == "" || int.tryParse(selection) == null) {
 
     showMenu();
     
@@ -205,16 +224,16 @@ void updateVehicle() async {
 
   }
 
-  var id = int.parse(selection);
+  int id = int.parse(selection);
 
   try {
     //ask for the regId. If no regId is provided, we repeat the process
     var regId = await setRegId("\nVilket registreringsnummer har fordonet? ");
     
-    //ask for vehicletype, list the vehicletypes-enum with an index so the user can select
+    //ask for vehicletype, list the vehicletypes-enum
     var vehicleType = await setVehicleType("\nVilken typ av fordon är det? ");
 
-    //print all persons so the user can select the owner the person-index
+    //print all persons so the user can select the owner
     var owner = await setOwner("\nAnge id för ägaren av fordonet? ");
 
     //object for updated vehicle
@@ -228,12 +247,18 @@ void updateVehicle() async {
   } on StateError { //no one was found, lets try again
 
     print("\nDet finns inget fordon med id $id");
+
     updateVehicle();
+
+    return;
 
   } on RangeError { //outside the index, lets try again
 
     print("\nDet finns inget fordon med id $id");
+
     updateVehicle();
+
+    return;
 
   } catch(err) { //some other error
 
@@ -286,12 +311,18 @@ void deleteVehicle() async {
   } on StateError { //no one was found, lets try again
 
     print("\nDet finns inget fordon med id $id");
+
     deleteVehicle();
+
+    return;
 
   } on RangeError { //outside the index, lets try again
 
     print("\nDet finns inget forodn med id $id");
+
     deleteVehicle();
+
+    return;
 
   } catch(err) { //some other error
 
@@ -344,51 +375,7 @@ Future<String> setVehicleType([String message = "\nVilken typ av fordon är det?
   //select the enum-value by index and return it
   return VehicleType.values[int.parse(inputVehicleIndex)].name;
 
-  /*
-  //loop thru the vehicletypes and print them with an index
-  var vehicleTypes = ["0 - Bil", "1 - Lastbil", "2 - MC", "3 - Annat fordon"];
-  String typeSelection = "";
-  for(var type in vehicleTypes) {
-    typeSelection += "$type, ";
-  }
-  print(typeSelection);
-
-  //ask user to select index and make sure we get an index within the range for the enum
-  String inputVehicleIndex;
-  do {
-    stdout.write("\nVälj fordonstyp: ");
-    inputVehicleIndex = stdin.readLineSync()!;
-  } while(inputVehicleIndex.isEmpty || int.tryParse(inputVehicleIndex) == null || int.tryParse(inputVehicleIndex)! >= vehicleTypes.length); 
-  
-  var id = int.parse(inputVehicleIndex);
-
-  return id;
-  */
-
 }
-
-//subfunction to set the ownerperson
-Future<int> setOwnerId([String message = "\nVem är ägaren av fordonet?"]) async {
-
-  print(message);
-
-  //list all persons using a function from the person-menu
-  var personList = await PersonRepository().getAll();
-  person_menu.printPersonList(personList);
-  print("");
-  
-  //ask the user to select index and make sure we get an index within the range for the persons registrered
-  String selection;
-  do {
-    stdout.write("Välj personens id: ");
-    selection = stdin.readLineSync()!;
-  } while(selection.isEmpty || int.tryParse(selection) == null || int.tryParse(selection)! >= (await PersonRepository().getAll()).length);
-  
-  var id = int.parse(selection);
-  return id;
-
-}
-
 
 //subfunction to set the ownerperson
 Future<Person> setOwner([String message = "\nVem är ägaren av fordonet?"]) async {
