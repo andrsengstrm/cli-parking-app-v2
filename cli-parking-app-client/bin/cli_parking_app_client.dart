@@ -4,7 +4,7 @@ import "package:cli_parking_app_client/main_menu.dart" as main_menu;
 void main(List<String> arguments) async {
   
   //init some data, only used it for quick testing
-  await initData();
+  //await initData();
 
   //show the main menu
   main_menu.showMenu();

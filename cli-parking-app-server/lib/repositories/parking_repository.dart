@@ -1,39 +1,37 @@
 import 'package:cli_parking_app_server/server_config.dart';
-import 'package:cli_parking_app_shared/models/person.dart';
+import 'package:cli_parking_app_shared/models/parking.dart';
 import 'package:cli_parking_app_shared/objectbox.g.dart';
 import 'package:cli_parking_app_shared/repositories/repository_interface.dart';
 
-class PersonRepository implements RepositoryInterface<Person> {
+class ParkingRepository implements RepositoryInterface<Parking> {
 
-  Box itemBox = ServerConfig().store.box<Person>();
+  Box itemBox = ServerConfig().store.box<Parking>();
 
   @override
-  Future<Person?> add(Person item) async {
+  Future<Parking?> add(Parking item) async {
     itemBox.put(item, mode: PutMode.insert);
     return item;
   }
 
   @override
-  Future<Person?> getById(int id) async {
+  Future<Parking?> getById(int id) async {
     return itemBox.get(id);
-  }
-
+  } 
 
   @override
-  Future<List<Person>?> getAll() async {
-    var itemList = itemBox.getAll().cast<Person>();
+  Future<List<Parking>?> getAll() async {
+    var itemList = itemBox.getAll().cast<Parking>();
     return itemList;
   }
 
-
   @override
-  Future<Person?> update(int id, Person item) async {
+  Future<Parking?> update(int id, Parking item) async {
     itemBox.put(item, mode: PutMode.update);
     return item;
   }
 
   @override
-  Future<Person?> delete(int id) async {
+  Future<Parking?> delete(int id) async {
     var itemToDelete = itemBox.get(id);
     if(itemToDelete != null) {
       itemBox.remove(id);

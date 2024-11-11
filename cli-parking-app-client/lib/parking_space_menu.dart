@@ -19,6 +19,8 @@ void showMenu() {
   //read the selected option
   readMenuSelection();
 
+  return;
+
 }
 
 void readMenuSelection() {
@@ -65,6 +67,8 @@ void readMenuSelection() {
     readMenuSelection();
   
   }
+
+  return;
   
 }
 
@@ -92,17 +96,21 @@ void addParkingSpace()  async{
   
   showMenu();
 
+  return;
 
 }
 
 void getParkingSpace() async {
 
-  stdout.write("\nAnge index på den parkeringsplats du vill visa (tryck enter för att avbryta): ");
+  stdout.write("\nAnge id på den parkeringsplats du vill visa (tryck enter för att avbryta): ");
   String selection = stdin.readLineSync()!;
 
   if(selection == "") {
+
     showMenu();
+    
     return;
+  
   }
 
   var id = int.parse(selection);
@@ -154,6 +162,8 @@ void getAllParkingSpaces() async {
 
   showMenu();
 
+  return;
+
 }
 
 void updateParkingSpace() async {
@@ -162,16 +172,24 @@ void updateParkingSpace() async {
   if(parkingSpaceList!.isEmpty) {
 
     print("\nDet finns inga parkeringsplatser registrerade");
+
     showMenu();
+
+    return;
 
   }
 
-  stdout.write("\nAnge index på den parkeringsplats du vill uppdatera (tryck enter för att avbryta): ");
+  printParkingSpaceList(parkingSpaceList);
+
+  stdout.write("\nAnge id på den parkeringsplats du vill uppdatera (tryck enter för att avbryta): ");
   String selection = stdin.readLineSync()!;
 
   if(selection == "") {
+
     showMenu();
+    
     return;
+  
   }
 
   var id = int.parse(selection);
@@ -211,6 +229,8 @@ void updateParkingSpace() async {
 
   showMenu();
 
+  return;
+
 }
 
 void deleteParkingSpace() async {
@@ -219,13 +239,19 @@ void deleteParkingSpace() async {
   if(parkingSpaceList!.isEmpty) {
 
     print("\nDet finns inga parkeringsplatser registrerade");
+
     showMenu();
+
+    return;
+  
   }
+
+  printParkingSpaceList(parkingSpaceList);
 
   //select parkingspace by index
   String input;
   do {
-    stdout.write("\nVälj id för parkeringsplatsen som du vill ta bort: ");
+    stdout.write("\nAnge id för parkeringsplatsen som du vill ta bort: ");
     input = stdin.readLineSync()!;
   } while(input.isEmpty || int.tryParse(input) == null);
   int id = int.parse(input);
@@ -257,6 +283,7 @@ void deleteParkingSpace() async {
 
   showMenu();
 
+  return;
 
 }
 

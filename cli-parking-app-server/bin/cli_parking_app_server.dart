@@ -8,7 +8,7 @@ void main(List<String> args) async {
   // Use any available host or container IP (usually `0.0.0.0`).
   final ip = InternetAddress.anyIPv4;
 
-  Router router = ServerConfig.instance.router;
+  Router router = ServerConfig().router;
 
   // Configure a pipeline that logs requests.
   final handler =
@@ -23,7 +23,7 @@ void main(List<String> args) async {
   ProcessSignal.sigint.watch().listen((ProcessSignal signal) {
     print("Shutting down...");
     server.close(force: true);
-    ServerConfig.instance.store.close();
+    ServerConfig().store.close();
     exit(0);
   });
 

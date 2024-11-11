@@ -7,13 +7,14 @@ import 'package:cli_parking_app_client/repositories/vehicle_repository.dart';
 
 //create some initial objects
 Future<void> initData() async {
-  Person owner = Person(personId: "7211097550", name: "Anders");
-  await PersonRepository().add(owner);
   
-  /*
-  Vehicle vehicle = Vehicle(regId: "LUP767", vehicleType: VehicleType.bil, owner: owner);
-  VehicleRepository().add(vehicle);
-  ParkingSpace parkingSpace = ParkingSpace(address: "Paulusväg 13, Bålsta", pricePerHour: 29);
-  ParkingSpaceRepository().add(parkingSpace);
-  */
+  Person owner = Person(personId: "7211097550", name: "Anders Emgström");
+  await PersonRepository().add(owner);
+
+  Vehicle vehicle = Vehicle(regId: "LUP767", vehicleType: "bil", owner: owner);
+  await VehicleRepository().add(vehicle);
+
+  ParkingSpace parkingSpace = ParkingSpace(address: "Paulus Parkingsgarage, Bålsta", pricePerHour: 29);
+  await ParkingSpaceRepository().add(parkingSpace); 
+  
 }

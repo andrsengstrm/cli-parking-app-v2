@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:2827233230222059718",
-      "lastPropertyId": "5:8153576999914725724",
+      "lastPropertyId": "7:7752874878956729229",
       "name": "Parking",
       "properties": [
         {
@@ -17,22 +17,22 @@
         {
           "id": "2:6654514823008871065",
           "name": "startTime",
-          "type": 12
+          "type": 9
         },
         {
           "id": "3:7862163815216777840",
           "name": "endTime",
-          "type": 12
+          "type": 9
         },
         {
-          "id": "4:579306653700035187",
-          "name": "vehicleId",
-          "type": 6
+          "id": "6:5623470963209636989",
+          "name": "vehicleDb",
+          "type": 9
         },
         {
-          "id": "5:8153576999914725724",
-          "name": "parkingSpaceId",
-          "type": 6
+          "id": "7:7752874878956729229",
+          "name": "parkingSpaceDb",
+          "type": 9
         }
       ],
       "relations": []
@@ -87,7 +87,7 @@
     },
     {
       "id": "5:2852842459744921116",
-      "lastPropertyId": "4:2034654012159923427",
+      "lastPropertyId": "8:2627394452066168480",
       "name": "Vehicle",
       "properties": [
         {
@@ -102,21 +102,21 @@
           "type": 9
         },
         {
-          "id": "3:2431658961351374028",
-          "name": "vehicleTypeId",
-          "type": 6
+          "id": "7:167106927899938160",
+          "name": "personOwner",
+          "type": 9
         },
         {
-          "id": "4:2034654012159923427",
-          "name": "ownerId",
-          "type": 6
+          "id": "8:2627394452066168480",
+          "name": "vehicleType",
+          "type": 9
         }
       ],
       "relations": []
     }
   ],
   "lastEntityId": "5:2852842459744921116",
-  "lastIndexId": "0:0",
+  "lastIndexId": "1:3143467106540658847",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
@@ -124,10 +124,18 @@
   "retiredEntityUids": [
     2873583754072079135
   ],
-  "retiredIndexUids": [],
+  "retiredIndexUids": [
+    3143467106540658847
+  ],
   "retiredPropertyUids": [
     2467096810797741914,
-    5592838161900795093
+    5592838161900795093,
+    2034654012159923427,
+    5478732290347115486,
+    7255081794660306940,
+    2431658961351374028,
+    579306653700035187,
+    8153576999914725724
   ],
   "retiredRelationUids": [],
   "version": 1

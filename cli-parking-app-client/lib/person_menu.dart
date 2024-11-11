@@ -20,6 +20,8 @@ void showMenu() {
   //read the selected option
   readMenuSelection();
 
+  return;
+
 }
 
 void readMenuSelection() {
@@ -59,6 +61,8 @@ void readMenuSelection() {
     readMenuSelection();
   
   }
+
+  return;
   
 }
 
@@ -87,6 +91,8 @@ void addPerson() async {
   
   showMenu();
 
+  return;
+
 }
 
 void getPerson() async {
@@ -95,8 +101,11 @@ void getPerson() async {
   String id = stdin.readLineSync()!;
 
   if(id == "") {
+
     showMenu();
+    
     return;
+  
   }
 
   try {
@@ -128,6 +137,8 @@ void getPerson() async {
   }
 
   showMenu();
+
+  return;
   
 }
 
@@ -149,6 +160,8 @@ void getAllPersons() async {
 
   showMenu();
 
+  return;
+
 }
 
 void updatePerson() async {
@@ -158,9 +171,14 @@ void updatePerson() async {
   if(personList.isEmpty) {
 
     stdout.write("\nDet finns inga personer registrerade");
+
     showMenu();
 
+    return;
+
   }
+
+  printPersonList(personList);
 
   stdout.write("\nAnge id på den person du vill uppdatera (tryck enter för att avbryta): ");
   String id = stdin.readLineSync()!;
@@ -168,6 +186,8 @@ void updatePerson() async {
   if(id == "") {
 
     showMenu();
+
+    return;
 
   }
 
@@ -210,6 +230,8 @@ void updatePerson() async {
 
   showMenu();
 
+  return;
+
 }
 
 void deletePerson() async {
@@ -219,15 +241,24 @@ void deletePerson() async {
   if(personList.isEmpty) {
 
     stdout.write("\nDet finns inga personer registrerade");
+
     showMenu();
 
+    return;
+
   }
+
+  printPersonList(personList);
 
   stdout.write("\nAnge id på den person du vill ta bort (tryck enter för att avbryta): ");
   String id = stdin.readLineSync()!;
 
   if(id == "") { //no value provided
+
     showMenu();
+  
+    return;
+  
   }
 
   try {
@@ -256,6 +287,8 @@ void deletePerson() async {
   }
 
   showMenu();
+
+  return;
 
 }
 

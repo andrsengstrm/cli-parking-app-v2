@@ -1,59 +1,74 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:cli_parking_app_shared/helpers/helpers.dart';
 import 'package:cli_parking_app_shared/models/person.dart';
 import 'package:cli_parking_app_shared/repositories/repository_interface.dart';
 
 class PersonRepository implements RepositoryInterface<Person> {
-
-  //static final PersonRepository _instance = PersonRepository._internal();
-  
-  //PersonRepository._internal();
-
-  //factory PersonRepository() => _instance;
-
   
   var client = http.Client();
-  final baseUrl = "http://localhost:8080";
+  final baseUrl = Helpers().baseUrl;
+  final path = "/person";
 
   @override
-  Future<Person> add(Person item) async {
+  Future<Person?> add(Person item) async {
 
     final body = item.toJson();
+    dynamic response;
 
-    final response = await client.post(
-      Uri.parse("$baseUrl/person"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(body)
-    );
-    
+    try {
+
+      response = await client.post(
+        Uri.parse("$baseUrl$path"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body)
+      );
+
+    } catch(err) {
+
+      throw Exception("Det gick inte att få kontakt med servern. $err");
+
+    }
+
     if(response.statusCode == 200) {
     
-      final personAsJson = jsonDecode(response.body);
-      Person person = Person.fromJson(personAsJson);
+      final bodyAsJson = jsonDecode(response.body);
+      Person person = Person.fromJson(bodyAsJson);
       return person;
     
     } else {
     
-      throw Exception("Could not add person");
+      throw Exception("Det gick inte att lägga till personen");
     
     }
-  
+
   }
+
 
   @override
   Future<List<Person>> getAll() async {
     
-    final response = await client.get(
-      Uri.parse('$baseUrl/person')
-    );
+    dynamic response;
+
+    try {
+
+      response = await client.get(
+        Uri.parse("$baseUrl$path")
+      );
+
+    } catch(err) {
+
+      throw Exception("Det gick inte att få kontakt med servern. $err");
+
+    }
 
     if(response.statusCode == 200) {
 
-      final personListAsJson = jsonDecode(response.body);
+      final bodyAsJson = jsonDecode(response.body);
       var personList = List<Person>.empty(growable: true);
 
-      for(var i=0; i< personListAsJson.length;i++) {
-        final person = Person.fromJson(personListAsJson[i]);
+      for(var i=0; i< bodyAsJson.length;i++) {
+        final person = Person.fromJson(bodyAsJson[i]);
         personList.add(person);
       }
 
@@ -61,77 +76,108 @@ class PersonRepository implements RepositoryInterface<Person> {
 
     } else {
 
-      throw Exception("Could not get all persons");
+      throw Exception("Det gick inte att hämta personer");
 
     }
 
   }
+
 
   @override
   Future<Person> getById(int id) async {
 
-    final response = await client.get(
-      Uri.parse('$baseUrl/person/$id')
-    );
+    dynamic response;
+
+    try {
+
+      response = await client.get(
+        Uri.parse("$baseUrl$path/$id")
+      );
+
+    } catch(err) {
+
+      throw Exception("Det gick inte att få kontakt med servern. $err");
+
+    }
     
     if(response.statusCode == 200) {
     
-      final personAsJson = jsonDecode(response.body);
-      Person person = Person.fromJson(personAsJson);
+      final bodyAsJson = jsonDecode(response.body);
+      Person person = Person.fromJson(bodyAsJson);
       return person;
     
     } else {
     
-      throw Exception("Could not get person with index $id");
+      throw Exception("Det gick inte att hämta personen med id $id");
     
     }
   
   }
+
 
   @override
   Future<Person> update(int id, Person item) async {
   
     final body = item.toJson();
+    dynamic response;
 
-    final response = await client.put(
-      Uri.parse("$baseUrl/person/$id"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(body)
-    );
-  
+    try {
+
+      response = await client.put(
+        Uri.parse("$baseUrl$path/$id"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body)
+      );
+
+    } catch(err) {
+
+      throw Exception("Det gick inte att få kontakt med servern. $err");
+
+    }
+
     if(response.statusCode == 200) {
   
-      var personAsJson = jsonDecode(response.body);
-      return Person.fromJson(personAsJson);
+      var bodyAsJson = jsonDecode(response.body);
+      return Person.fromJson(bodyAsJson);
       
     } else {
 
-      throw Exception("Could not update person");
+      throw Exception("DEt gick inte att uppdatera personen med id $id");
 
     }
   
   }
+
 
   @override
   Future<Person> delete(int id) async {
   
-    final response = await client.delete(
-      Uri.parse("$baseUrl/person/$id")
-    );
-  
+    dynamic response;
+
+    try {
+
+      response = await client.delete(
+        Uri.parse("$baseUrl$path/$id")
+      );
+
+    } catch(err) {
+
+      throw Exception("Det gick inte att få kontakt med servern. $err");
+
+    }
+
     if(response.statusCode == 200) {
   
-      var personAsJson = jsonDecode(response.body);
-      return Person.fromJson(personAsJson);
+      var bodyAsJson = jsonDecode(response.body);
+      return Person.fromJson(bodyAsJson);
   
     } else {
 
-      throw Exception("Could not delete person");
+      throw Exception("Det gick inte att ta bort personen med id $id");
 
     }
   
   }
-
 
 
 }
